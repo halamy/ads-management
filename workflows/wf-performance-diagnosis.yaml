@@ -1,0 +1,123 @@
+workflow:
+  name: wf-performance-diagnosis
+  display_name: "Diagnostico de Queda de Performance"
+  squad: ads-management
+  trigger: "CPA subiu, ROAS caiu, conversoes cairam"
+  estimated_time: "10-20 min"
+
+  description: |
+    Workflow para diagnosticar e resolver problemas de performance.
+    Segue o AdAID Framework: Ask → Information → Do.
+
+  client_context:
+    rule: "Carregar ficha do cliente da conta com problema ANTES de diagnosticar"
+    action: "Ler data/clients/{slug}.yaml na fase 1 (Alerta)"
+    enrichment: |
+      O diagnostico DEVE considerar:
+      - client.historico.problemas_conhecidos (nao repetir diagnostico de problema ja mapeado)
+      - client.aprendizados (o que funciona/nao funciona para ESTE cliente)
+      - client.restricoes_produto (nao recomendar produto que nao existe)
+      - client.metas (comparar performance vs meta especifica do cliente, nao benchmark generico)
+    veto: "SE acao corretiva sugere produto/oferta que viola client.restricoes_produto → BLOQUEAR"
+
+  phases:
+    - phase: 1
+      name: "Alerta"
+      agent: ads-chief
+      description: "Receber o sintoma e rotear para diagnostician"
+      elicit: true
+      questions:
+        - "Qual o sintoma? (CPA subiu, conversoes cairam, etc.)"
+        - "Qual conta e plataforma?"
+        - "Quando comecou?"
+      checkpoint:
+        veto: "SE sem sintoma claro → pedir mais detalhes"
+      handoff:
+        to: ads-diagnostician
+        trigger: "automatico — apos sintoma e dados coletados"
+        data_passed: "sintoma, plataforma, conta, metricas, quando comecou"
+
+    - phase: 2
+      name: "Investigacao"
+      agent: ads-diagnostician
+      task: diagnose-campaign.md
+      description: "Executar arvore de diagnostico com 6 checks"
+      inputs:
+        - "Sintoma da fase 1"
+        - "Metricas atuais"
+      output: "Causa-raiz identificada com nivel de confianca"
+      checkpoint:
+        veto: "SE dados insuficientes para executar arvore de diagnostico → pedir metricas faltantes antes de continuar"
+        quality: "Causa-raiz DEVE ter nivel de confianca (%) e pelo menos 3 checks executados"
+      handoff:
+        to: "self (ads-diagnostician)"
+        trigger: "automatico — causa-raiz identificada, seguir para plano"
+        data_passed: "causa-raiz, nivel de confianca, checks executados"
+
+    - phase: 3
+      name: "Plano de Acao"
+      agent: ads-diagnostician
+      description: "Gerar 3 acoes priorizadas"
+      output: |
+        1. URGENTE: acao imediata
+        2. IMPORTANTE: acao em 24-48h
+        3. MONITORAR: acao de acompanhamento
+      checkpoint:
+        veto: "SE causa-raiz nao identificada → NAO recomendar acoes, investigar mais"
+      handoff:
+        to: "meta-ads-expert OU google-ads-expert (conforme plataforma)"
+        trigger: "automatico — plano de acao definido"
+        data_passed: "3 acoes priorizadas, causa-raiz, plataforma, conta"
+
+    - phase: 4
+      name: "Execucao"
+      agents:
+        - meta-ads-expert  # se campanha Meta
+        - google-ads-expert  # se campanha Google
+      parallel: false  # SEQUENCIAL — executa agent conforme plataforma do diagnostico (Meta OU Google)
+      routing: "SE plataforma = Meta → meta-ads-expert | SE plataforma = Google → google-ads-expert | SE ambas → executar em sequencia"
+      description: "Implementar acoes recomendadas"
+      checkpoint:
+        veto: "SE plano de acao nao tem causa-raiz identificada → NAO implementar acoes"
+        quality: "Cada acao implementada DEVE ser documentada (o que mudou, valor anterior, valor novo)"
+      handoff:
+        to: ads-optimizer
+        trigger: "automatico — acoes implementadas"
+        data_passed: "acoes executadas, o que foi mudado, metricas pre-acao"
+
+    - phase: 5
+      name: "Monitoramento"
+      agent: ads-optimizer
+      description: "Acompanhar resultado das acoes por 72h"
+      monitoring_triggers:
+        - check_at: "24h"
+          action: "Comparar metricas vs pre-acao"
+        - check_at: "48h"
+          action: "Avaliar tendencia (melhorando/estavel/piorando)"
+        - check_at: "72h"
+          action: "Decisao final: RESOLVIDO ou NOVO CICLO"
+      rules:
+        - "Checar metricas 24h, 48h e 72h apos acao"
+        - "SE melhorou → documentar e fechar"
+        - "SE nao melhorou → ABRIR NOVO CICLO do workflow com novos dados (nunca voltar para fase anterior)"
+      checkpoint:
+        veto: "SE apos 2 ciclos sem melhora → escalar para ads-strategist (pode ser problema estrutural)"
+      handoff:
+        on_success: "Documentar e fechar ciclo"
+        on_failure: "Escalar para ads-strategist via *diagnostico-estrutural"
+        on_no_improvement: |
+          NOVO CICLO (fluxo unidirecional):
+          1. ads-optimizer documenta dados atualizados do ciclo atual
+          2. Inicia nova instancia de wf-performance-diagnosis
+          3. Dados do ciclo anterior sao INPUT da fase 1 do novo ciclo
+          4. NUNCA retornar para fases anteriores do ciclo atual
+
+  max_cycles: 2
+  escalation:
+    after_max_cycles: "ads-strategist"
+    reason: "Problema pode ser estrutural (funil, oferta, publico)"
+
+  completion_criteria:
+    - "Causa-raiz identificada"
+    - "Acoes implementadas"
+    - "Metricas melhoraram em 72h OU novo ciclo iniciado OU problema escalado para ads-strategist"

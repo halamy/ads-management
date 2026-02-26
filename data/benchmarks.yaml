@@ -1,0 +1,113 @@
+# Benchmarks de Trafego Pago
+# Squad: ads-management
+# Fontes: Meta Business Help Center, Google Ads Benchmarks (WordStream/LOCALiQ 2025), industry reports
+# Atualizado: 2026-02
+
+benchmarks:
+  meta_ads:
+    ecommerce:
+      cpa:
+        bom: "< R$25"
+        aceitavel: "R$25-50"
+        ruim: "> R$50"
+        nota: "Varia muito por ticket medio. Regra: CPA < 30% do ticket"
+      roas:
+        bom: "> 4x"
+        aceitavel: "2x-4x"
+        ruim: "< 2x"
+        nota: "Meta minimo: ROAS > margem de contribuicao"
+      ctr:
+        bom: "> 2%"
+        aceitavel: "1-2%"
+        ruim: "< 1%"
+      cpm:
+        referencia: "R$15-40"
+        nota: "Varia por segmento e epoca do ano"
+      frequencia:
+        saudavel: "< 2.0"
+        atencao: "2.0-3.0"
+        fadiga: "> 3.0"
+      hook_rate:
+        bom: "> 30%"
+        aceitavel: "20-30%"
+        ruim: "< 20%"
+        calculo: "3s video views / impressoes"
+
+    negocios_locais:
+      cpa_lead:
+        bom: "< R$15"
+        aceitavel: "R$15-30"
+        ruim: "> R$30"
+        nota: "Leads via formulario ou WhatsApp"
+      ctr:
+        bom: "> 1.5%"
+        aceitavel: "0.8-1.5%"
+        ruim: "< 0.8%"
+      taxa_conversao_lp:
+        bom: "> 15%"
+        aceitavel: "8-15%"
+        ruim: "< 8%"
+
+  google_ads:
+    search:
+      cpc:
+        referencia: "R$1-5 (varia muito por keyword)"
+        nota: "Keywords de alta intencao podem custar R$10-50+"
+      ctr:
+        bom: "> 5%"
+        aceitavel: "3-5%"
+        ruim: "< 3%"
+        nota: "Search tem CTR naturalmente mais alto que Display"
+      quality_score:
+        bom: ">= 7"
+        aceitavel: "5-6"
+        ruim: "< 5"
+        nota: "QS < 5 indica problema em LP, relevancia ou CTR esperado"
+      taxa_conversao:
+        bom: "> 5%"
+        aceitavel: "2-5%"
+        ruim: "< 2%"
+
+    pmax:
+      roas:
+        bom: "> 5x"
+        aceitavel: "3-5x"
+        ruim: "< 3x"
+        nota: "PMax tende a ter ROAS inflado por remarketing"
+      cpa:
+        nota: "Usar tCPA baseado no historico de Search"
+
+    display:
+      ctr:
+        referencia: "0.3-0.5%"
+        nota: "CTR baixo e normal em Display"
+      cpm:
+        referencia: "R$5-15"
+
+  tracking:
+    event_match_quality:
+      bom: "> 7.0"
+      aceitavel: "5.0-7.0"
+      ruim: "< 5.0"
+    discrepancia_plataforma_analytics:
+      aceitavel: "< 20%"
+      investigar: "> 20%"
+      critico: "> 40%"
+
+  budget:
+    minimo_viavel:
+      formula: "CPA meta x 5 conversoes x 30 dias"
+      exemplo: "CPA meta R$20 → minimo R$3.000/mes"
+      nota: "Abaixo disso, dados insuficientes para otimizacao"
+    scaling:
+      incremento_seguro: "20-30% por vez"
+      frequencia: "A cada 5-7 dias se CPA estavel"
+      maximo_salto: "50% (com confirmacao do gestor)"
+
+  sazonalidade:
+    picos_custo:
+      - "Black Friday (novembro): CPM +50-100%"
+      - "Natal (dezembro): CPM +30-50%"
+      - "Dia das Maes (maio): CPM +20-40%"
+      - "Janeiro: CPM baixo (oportunidade)"
+    nota: "Ajustar metas e budget conforme sazonalidade"

@@ -1,0 +1,46 @@
+template:
+  name: relatorio-semanal
+  display_name: "Relatorio Semanal de Performance"
+  squad: ads-management
+  executor: ads-optimizer
+  used_by:
+    - generate-client-report.md
+
+  description: |
+    Template de relatorio semanal para acompanhamento operacional.
+    Foco em acoes tomadas e resultados da semana.
+
+  placeholders:
+    - "{CLIENTE}"
+    - "{SEMANA}" # Ex: Semana 3 — 15/01 a 21/01
+    - "{DATA_GERACAO}"
+
+  structure: |
+    # Relatorio Semanal: {CLIENTE} — {SEMANA}
+    Gerado em: {DATA_GERACAO}
+
+    ---
+
+    ## Status Geral: {STATUS_EMOJI} {STATUS}
+    <!-- STATUS: SAUDAVEL / ATENCAO / CRITICO -->
+
+    ## Metricas da Semana
+    | Metrica | Resultado | Meta | Status |
+    |---------|-----------|------|--------|
+    | Investimento | R${INVEST} | R${INVEST_META} | {OK/ATENCAO} |
+    | Resultados | {RESULTADO} | {RESULTADO_META} | {OK/ATENCAO} |
+    | CPA/ROAS | {CPA} | {CPA_META} | {OK/ATENCAO} |
+
+    ## Acoes Realizadas
+    - {ACAO_1} → resultado
+    - {ACAO_2} → resultado
+
+    ## Proxima Semana
+    - {PLANO_1}
+    - {PLANO_2}
+
+  guidelines:
+    - "Maximo 1 pagina — cliente nao tem tempo"
+    - "Status geral em 1 palavra: SAUDAVEL, ATENCAO, CRITICO"
+    - "Acoes realizadas SEMPRE com resultado"
+    - "Foco em acao, nao em analise"

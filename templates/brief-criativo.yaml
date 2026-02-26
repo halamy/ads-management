@@ -1,0 +1,122 @@
+template:
+  name: brief-criativo
+  display_name: "Brief Criativo de Performance"
+  squad: ads-management
+  executor: ads-creative-analyst
+  used_by:
+    - create-creative-brief.md
+    - wf-creative-refresh.yaml (phase 3 output)
+
+  description: |
+    Template do brief criativo estruturado para producao de anuncios.
+    Entrega especificacoes acionaveis para equipe de design/video.
+    NAO e o criativo final — e a instrucao para producao.
+
+  placeholders:
+    - "{CLIENTE}"
+    - "{DATA}"
+    - "{OBJETIVO}" # substituir fadigado, escalar, lancamento
+    - "{QTD_CRIATIVOS}"
+    - "{PIPELINE_MIX}" # ex: 70% iteracao + 30% novo
+
+  structure: |
+    # Brief Criativo: {CLIENTE} — {QTD_CRIATIVOS} Novos Criativos
+    Data: {DATA} | Analista: ads-creative-analyst
+
+    ---
+
+    ## Contexto do Cliente
+    - Segmento: {SEGMENTO}
+    - Publico principal: {PUBLICO_PRINCIPAL}
+    - Publico secundario: {PUBLICO_SECUNDARIO}
+    - Produtos destaque: {PRODUTOS_FEATURED}
+    - Tom de comunicacao: {TOM}
+    - Restricoes: {RESTRICOES_RESUMO}
+
+    ## Objetivo do Lote
+    - Motivo: {OBJETIVO}
+    - Pipeline mix: {PIPELINE_MIX}
+    - Criativos a substituir: {CRIATIVOS_SUBSTITUIR}
+
+    ## Aprendizados do Cliente
+    **Funciona:**
+    - {FUNCIONA_1}
+    - {FUNCIONA_2}
+
+    **Nao funciona:**
+    - {NAO_FUNCIONA_1}
+    - {NAO_FUNCIONA_2}
+
+    ---
+
+    ## Criativo {NUM}: {NOME_CONCEITO}
+
+    | Campo | Especificacao |
+    |-------|--------------|
+    | **Tipo** | {TIPO} (Iteracao de winner #{X} / Conceito novo) |
+    | **Formato** | {FORMATO} (Video UGC / Video produzido / Estatico / Carrossel) |
+    | **Duracao** | {DURACAO} (se video: < 15s / 15-30s / 30-60s) |
+    | **Angulo** | {ANGULO_TIPO}: {ANGULO_DESCRICAO} |
+    | **Hook (3s)** | Visual: {HOOK_VISUAL} / Texto: {HOOK_TEXTO} |
+    | **Corpo** | {CORPO_DESCRICAO} |
+    | **CTA** | {CTA_TEXTO} + {CTA_TIPO} (link, WhatsApp, formulario) |
+    | **Prova social** | {PROVA_TIPO}: {PROVA_DESCRICAO} |
+    | **Copy principal** | {COPY_HEADLINE} |
+    | **Copy secundaria** | {COPY_BODY} |
+    | **Referencia** | {REFERENCIA} (winner anterior / referencia externa / conceito original) |
+
+    ### Assets Necessarios
+    - {ASSET_1} (ex: video da mae usando produto, 15-20s)
+    - {ASSET_2} (ex: foto do produto com fundo clean)
+    - {ASSET_3} (ex: depoimento de cliente em texto)
+
+    ### Compliance deste Criativo
+    - [ ] Produto mencionado esta ativo: {PRODUTO}
+    - [ ] Sem palavras proibidas: {PALAVRAS_CHECK}
+    - [ ] Restricao legal respeitada: {LEGAL_CHECK}
+    - [ ] Tom alinhado com cliente: {TOM_CHECK}
+
+    ---
+
+    (Repetir bloco para cada criativo do lote)
+
+    ---
+
+    ## Checklist de Compliance Geral
+
+    - [ ] Nenhum produto fora do catalogo ativo
+    - [ ] Nenhuma palavra proibida pelo cliente
+    - [ ] Restricoes legais respeitadas ({RESTRICOES_LEGAIS})
+    - [ ] Tom de comunicacao alinhado
+    - [ ] Restricoes de produto respeitadas ({RESTRICOES_PRODUTO})
+    - [ ] Nenhum claim medico/resultado garantido (se aplicavel)
+
+    ## Resumo do Pipeline
+
+    | Metrica | Valor |
+    |---------|-------|
+    | Total criativos | {QTD_CRIATIVOS} |
+    | Iteracoes de winners | {QTD_ITERACOES} ({PCT_ITERACOES}%) |
+    | Conceitos novos | {QTD_NOVOS} ({PCT_NOVOS}%) |
+    | Angulos distintos | {QTD_ANGULOS} |
+    | Formatos distintos | {QTD_FORMATOS} |
+    | Compliance | {COMPLIANCE_STATUS} |
+
+    ## Proximo Passo
+    1. Produzir criativos conforme este brief
+    2. Subir via meta-ads-expert / google-ads-expert
+    3. Configurar teste isolado (1 variavel por teste)
+    4. Aguardar 1000+ impressoes e 3+ dias antes de julgar
+
+    ---
+    *Brief gerado pelo squad ads-management — ads-creative-analyst*
+
+  guidelines:
+    - "Cada criativo DEVE ter hook de 3 segundos definido (visual + textual)"
+    - "Minimo 2 angulos diferentes no lote"
+    - "Pipeline mix: 70% iteracao + 30% novo (quando ha winners)"
+    - "Compliance check POR CRIATIVO + geral no final"
+    - "Assets necessarios DEVEM ser listados (equipe de producao precisa saber o que preparar)"
+    - "Linguagem do brief deve ser INSTRUCIONAL — quem produz precisa executar sem duvidas"
+    - "NAO incluir metricas de performance no brief — isso e da analise, nao da producao"
+    - "SE cliente tem restricoes legais (ANVISA, CRM) → destacar em CADA criativo, nao so no geral"

@@ -1,0 +1,210 @@
+# Indice de Heuristicas — ads-management
+# Permite referencia cruzada entre agents, tasks e workflows
+# Atualizado: 2026-02
+
+heuristics:
+  # ═══════════════════════════════════════════════════════════════
+  # ROUTING (ads-chief)
+  # ═══════════════════════════════════════════════════════════════
+  routing:
+    - id: RT_001
+      name: "Meta Platform Router"
+      rule: "SE menciona Meta/Facebook/Instagram → meta-ads-expert"
+      agent: ads-chief
+
+    - id: RT_002
+      name: "Google Platform Router"
+      rule: "SE menciona Google/Search/PMax/YouTube Ads → google-ads-expert"
+      agent: ads-chief
+
+    - id: RT_003
+      name: "Performance Issue Router"
+      rule: "SE CPA subiu OU conversoes cairam OU ROAS caiu → ads-diagnostician"
+      agent: ads-chief
+
+    - id: RT_004
+      name: "Strategy Router"
+      rule: "SE novo cliente OU reestruturacao OU funil → ads-strategist"
+      agent: ads-chief
+
+    - id: RT_005
+      name: "Daily Routine Router"
+      rule: "SE rotina diaria OU checklist OU otimizacao de conta → ads-optimizer"
+      agent: ads-chief
+
+    - id: RT_006
+      name: "Cross-Account Router"
+      rule: "SE visao geral OU comparativo entre contas → ads-chief (self)"
+      agent: ads-chief
+
+    - id: RT_007
+      name: "Creative Analysis Router"
+      rule: "SE menciona criativo/anuncio/hook/copy/Ad Library/concorrencia/brief criativo → ads-creative-analyst"
+      agent: ads-chief
+
+  # ═══════════════════════════════════════════════════════════════
+  # DIAGNOSTICO (ads-diagnostician)
+  # ═══════════════════════════════════════════════════════════════
+  diagnostico:
+    - id: DG_001
+      name: "Tracking First"
+      rule: "SE queda abrupta (0 conversoes) → CHECK 0 (tracking) OBRIGATORIO antes de qualquer outro diagnostico"
+      agent: ads-diagnostician
+      source: "[SOURCE: Mike Rhodes — AdAID Check 0]"
+
+    - id: DG_002
+      name: "Creative Fatigue Detection"
+      rule: "SE frequencia > 3.0 E CTR caindo → FADIGA DE CRIATIVO"
+      agent: ads-diagnostician
+      source: "[SOURCE: Ed Leake — God Tier Fatigue SOP]"
+
+    - id: DG_003
+      name: "Audience Saturation Detection"
+      rule: "SE publico < 100k E frequencia alta E CPA subindo → SATURACAO DE PUBLICO"
+      agent: ads-diagnostician
+
+    - id: DG_004
+      name: "Learning Phase Protection"
+      rule: "SE campanha < 7 dias OU < 50 conversoes → NAO diagnosticar, e fase de aprendizado"
+      agent: ads-diagnostician
+      source: "[SOURCE: Meta — Learning Phase Documentation]"
+
+    - id: DG_005
+      name: "Budget Sufficiency Check"
+      rule: "SE budget diario < 5x CPA meta → dados insuficientes para aprendizado"
+      agent: ads-diagnostician
+
+    - id: DG_006
+      name: "External Factor Check"
+      rule: "SE todas as contas caindo simultaneamente → verificar fator externo (sazonalidade, plataforma)"
+      agent: ads-diagnostician
+
+  # ═══════════════════════════════════════════════════════════════
+  # OTIMIZACAO (ads-optimizer)
+  # ═══════════════════════════════════════════════════════════════
+  otimizacao:
+    - id: OT_001
+      name: "Scale Decision"
+      rule: "SE CPA <= meta E conversoes >= 5/dia E estavel 5+ dias → ESCALAR (budget +20-30%)"
+      agent: ads-optimizer
+      source: "[SOURCE: Andrew Foxwell — AAA Ascension]"
+
+    - id: OT_002
+      name: "Maintain Decision"
+      rule: "SE CPA <= meta E conversoes < 5/dia → MANTER (nao mexer, dados insuficientes)"
+      agent: ads-optimizer
+
+    - id: OT_003
+      name: "Optimize Decision"
+      rule: "SE CPA entre meta e 1.5x meta → OTIMIZAR (testar novo criativo/publico)"
+      agent: ads-optimizer
+
+    - id: OT_004
+      name: "Pause Decision"
+      rule: "SE CPA > 1.5x meta OU ROAS < 50% da meta → PAUSAR (pausar piores criativos)"
+      agent: ads-optimizer
+      source: "[SOURCE: Ed Leake — God Tier Kill Rules]"
+
+    - id: OT_005
+      name: "Fatigue Decision"
+      rule: "SE frequencia > 3.0 E CTR caindo → FADIGA (trocar criativos prioritariamente)"
+      agent: ads-optimizer
+
+    - id: OT_006
+      name: "Budget Safety"
+      rule: "SE aumento de budget > 50% → REQUER confirmacao do gestor"
+      agent: ads-optimizer
+
+  # ═══════════════════════════════════════════════════════════════
+  # ESTRATEGIA (ads-strategist)
+  # ═══════════════════════════════════════════════════════════════
+  estrategia:
+    - id: ST_001
+      name: "Budget Viability Check"
+      rule: "SE budget mensal < CPA meta x 5 x 30 → ALERTAR sobre dados insuficientes"
+      agent: ads-strategist
+      source: "[SOURCE: Molly Pittman — Profitable Traffic System]"
+
+    - id: ST_002
+      name: "Retargeting Allocation"
+      rule: "SEMPRE alocar minimo 10% do budget para retargeting"
+      agent: ads-strategist
+
+    - id: ST_003
+      name: "Platform Split Decision"
+      rule: "SE ecommerce → priorizar Meta (visual) + Google Shopping. SE servico local → priorizar Google Search + Meta leads"
+      agent: ads-strategist
+
+  # ═══════════════════════════════════════════════════════════════
+  # CRIATIVOS (ads-creative-analyst)
+  # ═══════════════════════════════════════════════════════════════
+  criativos:
+    - id: CRE_001
+      name: "Hook de 3 Segundos"
+      rule: "SE criativo de video nao tem hook visual+textual nos primeiros 3s → vai falhar"
+      agent: ads-creative-analyst
+      source: "[SOURCE: Dara Denney — Thumb-Stop Rate]"
+
+    - id: CRE_002
+      name: "Angulo > Execucao"
+      rule: "SE angulo errado, nenhuma execucao bonita salva. Testar angulos ANTES de formatos"
+      agent: ads-creative-analyst
+      source: "[SOURCE: Nick Shackelford — Concept vs Execution]"
+
+    - id: CRE_003
+      name: "Iterar > Inventar"
+      rule: "70% iteracoes de winners + 30% conceitos novos"
+      agent: ads-creative-analyst
+      source: "[SOURCE: Barry Hott — Winner iteration]"
+
+    - id: CRE_004
+      name: "Winner = Padrao Replicavel"
+      rule: "Documentar POR QUE winner funciona (angulo, hook, formato, prova). Padrao serve cross-account"
+      agent: ads-creative-analyst
+      source: "[SOURCE: Barry Hott — Pattern Recognition]"
+
+    - id: CRE_005
+      name: "Fadiga Criativa Previsivel"
+      rule: "Freq > 2.5 = sinal amarelo. Freq > 3.0 + CTR caindo = fadiga. Freq > 4.0 = morto"
+      agent: ads-creative-analyst
+      source: "[SOURCE: Dara Denney — Creative Lifecycle]"
+
+    - id: CRE_006
+      name: "1000 Impressoes Minimas"
+      rule: "NUNCA julgue criativo com < 1000 impressoes — dados insuficientes"
+      agent: ads-creative-analyst
+      source: "[SOURCE: Nick Shackelford — minimum data threshold]"
+
+  # ═══════════════════════════════════════════════════════════════
+  # ESCALACAO (cross-agent)
+  # ═══════════════════════════════════════════════════════════════
+  escalacao:
+    - id: ESC_001
+      name: "Optimizer to Diagnostician"
+      rule: "SE problema persiste apos acao do optimizer (2+ dias) → escalar para ads-diagnostician"
+      from: ads-optimizer
+      to: ads-diagnostician
+
+    - id: ESC_002
+      name: "Diagnostician to Strategist"
+      rule: "SE diagnostico indica problema estrutural (funil, oferta, publico errado) → escalar para ads-strategist"
+      from: ads-diagnostician
+      to: ads-strategist
+
+    - id: ESC_003
+      name: "Max Cycles Escalation"
+      rule: "SE 2 ciclos de diagnostico sem melhora → escalar para ads-strategist"
+      from: wf-performance-diagnosis
+      to: ads-strategist
+
+    - id: ESC_004
+      name: "Fatigue to Creative Analyst"
+      rule: "SE diagnostician/optimizer detecta fadiga criativa → escalar para ads-creative-analyst para analise + brief"
+      from: ads-diagnostician
+      to: ads-creative-analyst
+
+    - id: ESC_005
+      name: "Creative Analyst to Strategist"
+      rule: "SE analise de criativos revela problema de posicionamento/funil (angulo nao e o problema) → escalar para ads-strategist"
+      from: ads-creative-analyst
+      to: ads-strategist

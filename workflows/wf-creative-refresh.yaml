@@ -1,0 +1,166 @@
+workflow:
+  name: wf-creative-refresh
+  display_name: "Refresh de Criativos (Fadiga → Analise → Brief → Teste → Validacao)"
+  squad: ads-management
+  trigger: "Fadiga criativa detectada (freq > 3.0 + CTR caindo) OU rotacao preventiva"
+  estimated_time: "20-30 min"
+
+  description: |
+    Workflow completo para resolver fadiga criativa: detecta criativos fadigados,
+    analisa winners para extrair padroes, gera briefs de novos criativos,
+    coordena teste e valida resultado. Fecha o gap entre diagnostico e acao criativa.
+
+  client_context:
+    rule: "Carregar ficha do cliente ANTES de iniciar qualquer fase"
+    action: "Ler data/clients/{slug}.yaml na fase 1 (Deteccao)"
+    enrichment: |
+      O refresh DEVE considerar:
+      - client.aprendizados.funciona (replicar padroes que funcionam)
+      - client.aprendizados.nao_funciona (evitar angulos que ja falharam)
+      - client.restricoes_produto (nao sugerir produto/claim proibido)
+      - client.regras.comunicacao (tom, palavras proibidas)
+      - client.restricoes_legais (ANVISA, CRM, etc.)
+    veto: "SE brief viola restricoes do cliente → BLOQUEAR antes de produzir"
+
+  phases:
+    - phase: 1
+      name: "Deteccao"
+      agent: ads-optimizer
+      description: "Identificar criativos fadigados e coletar metricas"
+      elicit: true
+      questions:
+        - "Qual cliente e conta?"
+        - "Cole metricas dos criativos ativos: nome, CTR, CPA/ROAS, frequencia, impressoes"
+      rules:
+        - "Aplicar classificacao: WINNER / FADIGADO / MORTO / TESTE / OTIMIZAR"
+        - "SE nenhum criativo fadigado/morto → workflow nao necessario, documentar e fechar"
+        - "SE ha fadigados/mortos → coletar dados e passar para analise"
+      checkpoint:
+        veto: "SE sem dados de metricas por criativo → NAO classificar, pedir dados"
+        quality: "Cada criativo DEVE ter: CTR, CPA ou ROAS, frequencia, impressoes"
+      output: "Lista de criativos classificados com metricas"
+      handoff:
+        to: ads-creative-analyst
+        trigger: "automatico — criativos fadigados/mortos identificados"
+        data_passed: "Lista classificada com metricas, ficha do cliente carregada"
+
+    - phase: 2
+      name: "Analise de Winners"
+      agent: ads-creative-analyst
+      task: analyze-ad-creatives.md
+      description: "Deconstruir winners existentes e identificar padroes replicaveis"
+      inputs:
+        - "Classificacao da fase 1"
+        - "Ficha do cliente"
+      rules:
+        - "Focar em winners ativos: deconstruir angulo, hook, formato, prova"
+        - "Documentar POR QUE cada winner funciona"
+        - "SE nao ha winners → analisar historico ou pular para conceitos novos"
+        - "Identificar padroes cross-criativo (angulo que sempre performa)"
+      checkpoint:
+        veto: "SE criativo com < 1000 impressoes classificado como winner → VETO — dados insuficientes"
+        quality: "Cada winner DEVE ter deconstrucao completa (angulo, hook, formato, prova, por que funciona)"
+      output: "Deconstrucao de winners + padroes identificados + scoring"
+      handoff:
+        to: "self (ads-creative-analyst)"
+        trigger: "automatico — analise concluida, seguir para brief"
+        data_passed: "Padroes de winners, angulos que funcionam, scoring"
+
+    - phase: 3
+      name: "Brief Criativo"
+      agent: ads-creative-analyst
+      task: create-creative-brief.md
+      description: "Gerar briefs estruturados para novos criativos"
+      inputs:
+        - "Padroes de winners da fase 2"
+        - "Criativos fadigados/mortos a substituir (fase 1)"
+        - "Ficha do cliente"
+      rules:
+        - "Pipeline mix: 70% iteracoes de winners + 30% conceitos novos"
+        - "SE nao ha winners: 100% conceitos novos com 3+ angulos"
+        - "Minimo 2 angulos diferentes no lote"
+        - "Compliance check obrigatorio antes de entregar"
+        - "Quantidade: pelo menos 1 criativo novo para cada fadigado/morto"
+      checkpoint:
+        veto: "SE brief viola restricoes do cliente → REFORMULAR"
+        veto: "SE todos os briefs usam mesmo angulo → VETO — diversificar"
+        quality: "Cada brief DEVE ter: formato, angulo, hook (3s), corpo, CTA, compliance"
+      output: "Lote de briefs criativos estruturados"
+      handoff:
+        to: "meta-ads-expert OU google-ads-expert (conforme plataforma)"
+        trigger: "automatico — briefs aprovados e compliance OK"
+        data_passed: "Briefs completos, criativos a pausar, plataforma alvo"
+
+    - phase: 4
+      name: "Producao e Teste"
+      agents:
+        - meta-ads-expert   # se campanha Meta
+        - google-ads-expert  # se campanha Google
+      parallel: false  # SEQUENCIAL — executa agent conforme plataforma da campanha (Meta OU Google, nao ambos)
+      routing: "SE campanha Meta → meta-ads-expert | SE campanha Google → google-ads-expert | SE ambas → executar em sequencia"
+      description: "Produzir criativos a partir dos briefs e subir para teste"
+      inputs:
+        - "Briefs da fase 3"
+        - "Assets disponiveis (fotos, videos, UGC)"
+      rules:
+        - "Pausar criativos classificados como MORTO na fase 1"
+        - "Manter criativos FADIGADOS rodando ate substitutos terem dados (1000+ imp)"
+        - "Subir novos criativos em teste isolado (1 variavel por teste)"
+        - "NAO mudar publico ou budget junto com criativo novo"
+        - "Documentar: o que subiu, quando subiu, configuracao de teste"
+      checkpoint:
+        veto: "SE criativo final nao corresponde ao brief (angulo/hook diferente) → ALERTAR"
+        quality: "Cada criativo subido DEVE ter: nome padronizado, teste isolado, budget de teste definido"
+      output: "Criativos novos ativos em teste + criativos mortos pausados"
+      handoff:
+        to: ads-optimizer
+        trigger: "automatico — criativos novos subidos e ativos"
+        data_passed: "Lista de novos criativos, data de subida, configuracao de teste, baseline pre-teste"
+
+    - phase: 5
+      name: "Validacao"
+      agent: ads-optimizer
+      description: "Monitorar novos criativos por 3-5 dias e classificar resultado"
+      rules:
+        - "Aguardar minimo 1000 impressoes E 3 dias antes de julgar"
+        - "Comparar novos criativos vs baseline (CPA/ROAS pre-refresh)"
+        - "Classificar cada novo criativo: WINNER / MANTER / MORTO"
+        - "SE novo criativo e WINNER → escalar e documentar padrao"
+        - "SE nenhum novo criativo funciona → ABRIR NOVO CICLO com dados atualizados"
+        - "Pausar criativos FADIGADOS originais so quando substitutos tiverem dados"
+      checkpoint:
+        veto: "SE julgar criativo com < 1000 impressoes ou < 3 dias → VETO — aguardar dados"
+        quality: "Resultado DEVE incluir: comparativo vs baseline, classificacao por criativo, proximo passo"
+      output: "Resultado do refresh: quais funcionaram, quais nao, aprendizados"
+      handoff:
+        on_success: |
+          Documentar resultado no historico do cliente:
+          - Angulos que funcionaram → adicionar a client.aprendizados.funciona
+          - Angulos que falharam → adicionar a client.aprendizados.nao_funciona
+          Fechar ciclo.
+        on_failure: |
+          NOVO CICLO (fluxo unidirecional):
+          1. ads-optimizer documenta dados atualizados
+          2. Inicia nova instancia de wf-creative-refresh com novos dados
+          3. Dados do ciclo anterior sao INPUT da fase 1 do novo ciclo
+          4. NUNCA retornar para fases anteriores do ciclo atual
+        on_partial: |
+          SE alguns criativos funcionaram e outros nao:
+          - Escalar os que funcionaram
+          - Abrir novo ciclo APENAS para substituir os que falharam
+          - Incluir aprendizados do ciclo atual como input
+
+  max_cycles: 2
+  escalation:
+    after_max_cycles: "ads-strategist"
+    reason: |
+      Se 2 ciclos de refresh criativo nao resolvem, o problema provavelmente
+      nao e criativo — pode ser posicionamento, publico, funil ou oferta.
+      Escalar para ads-strategist para avaliacao estrutural.
+
+  completion_criteria:
+    - "Criativos fadigados/mortos substituidos"
+    - "Novos criativos com dados minimos (1000+ imp, 3+ dias)"
+    - "Pelo menos 1 novo criativo com performance aceitavel (CPA <= meta)"
+    - "Aprendizados documentados na ficha do cliente"
+    - "OU problema escalado para ads-strategist apos 2 ciclos"

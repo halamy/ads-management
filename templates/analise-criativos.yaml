@@ -1,0 +1,121 @@
+template:
+  name: analise-criativos
+  display_name: "Analise de Criativos de Performance"
+  squad: ads-management
+  executor: ads-creative-analyst
+  used_by:
+    - analyze-ad-creatives.md
+    - wf-creative-refresh.yaml (phase 2 output)
+
+  description: |
+    Template do output padronizado da analise de criativos.
+    Classifica cada criativo por ciclo de vida, deconstrui winners,
+    aplica scoring e recomenda acoes priorizadas.
+
+  placeholders:
+    - "{CLIENTE}"
+    - "{DATA}"
+    - "{SEGMENTO}"
+    - "{PUBLICO_ALVO}"
+    - "{CPA_META}" # ou ROAS_META
+    - "{TOTAL_CRIATIVOS}"
+
+  structure: |
+    # Analise de Criativos: {CLIENTE}
+    Data: {DATA} | Analista: ads-creative-analyst
+
+    ---
+
+    ## Contexto do Cliente
+    - Segmento: {SEGMENTO}
+    - Publico: {PUBLICO_ALVO}
+    - CPA meta: R${CPA_META} | ROAS meta: {ROAS_META}x
+    - Restricoes: {RESTRICOES_RESUMO}
+
+    ## Classificacao por Ciclo de Vida
+
+    | # | Criativo | Formato | CTR | CPA/ROAS | Freq | Imp | Status | Acao |
+    |---|----------|---------|-----|----------|------|-----|--------|------|
+    | 1 | {CRIATIVO_1} | {FORMATO} | {CTR}% | R${CPA} | {FREQ} | {IMP} | {STATUS} | {ACAO} |
+    | 2 | {CRIATIVO_2} | {FORMATO} | {CTR}% | R${CPA} | {FREQ} | {IMP} | {STATUS} | {ACAO} |
+
+    **Legenda de Status:**
+    - WINNER: Top 20% por CPA/ROAS, 1000+ imp, 3+ dias estavel
+    - FADIGADO: Freq > 3.0 E CTR caindo > 20% vs pico
+    - MORTO: CPA > 1.5x meta OU CTR caiu > 40% OU freq > 4.0
+    - TESTE: < 1000 impressoes — dados insuficientes
+    - OTIMIZAR: CPA entre meta e 1.5x meta
+
+    ## Deconstrucao de Winners
+
+    ### Winner #{NUM}: {NOME_CRIATIVO}
+
+    | Dimensao | Analise |
+    |----------|---------|
+    | Angulo | {ANGULO_DESCRICAO} |
+    | Formato | {FORMATO_TIPO} |
+    | Hook (3s) | {HOOK_DESCRICAO} |
+    | Tipo de hook | {HOOK_TIPO} (pattern interrupt / curiosity gap / pain call-out / social proof / before-after) |
+    | Prova social | {PROVA_TIPO} |
+    | CTA | {CTA_DESCRICAO} |
+    | Por que funciona | {PADRAO_REPLICAVEL} |
+
+    ### Creative Scoring
+
+    | Dimensao | Peso | Score | Justificativa |
+    |----------|------|-------|---------------|
+    | Hook Power | 30% | {SCORE}/5 | {JUSTIFICATIVA} |
+    | Hold/Corpo | 25% | {SCORE}/5 | {JUSTIFICATIVA} |
+    | CTA Clarity | 20% | {SCORE}/5 | {JUSTIFICATIVA} |
+    | Relevancia | 15% | {SCORE}/5 | {JUSTIFICATIVA} |
+    | Compliance | 10% | {SCORE}/5 | {JUSTIFICATIVA} |
+    | **TOTAL** | 100% | **{TOTAL}/5** | **{CLASSIFICACAO}** |
+
+    Score >= 4.0 = FORTE | 3.0-3.9 = MEDIO | < 3.0 = FRACO
+
+    ## Padroes Identificados
+
+    | Padrao | Evidencia | Replicavel? |
+    |--------|-----------|-------------|
+    | {PADRAO_1} | {EVIDENCIA} | Sim/Nao |
+    | {PADRAO_2} | {EVIDENCIA} | Sim/Nao |
+
+    ## Acoes Priorizadas
+
+    **1. URGENTE** (fadigados/mortos)
+    - {ACAO_URGENTE_1}
+    - {ACAO_URGENTE_2}
+
+    **2. IMPORTANTE** (iteracoes sobre winners)
+    - {ACAO_IMPORTANTE_1}
+    - {ACAO_IMPORTANTE_2}
+
+    **3. PROXIMO** (pipeline e preventivo)
+    - {ACAO_PROXIMO_1}
+    - {ACAO_PROXIMO_2}
+
+    ## Compliance Check
+    - [ ] Restricoes do cliente respeitadas
+    - [ ] Sem claims proibidos nas recomendacoes
+    - [ ] Produtos mencionados sao ativos
+
+    ## Resumo
+    | Metrica | Valor |
+    |---------|-------|
+    | Total criativos analisados | {TOTAL_CRIATIVOS} |
+    | Winners | {QTD_WINNERS} |
+    | Fadigados | {QTD_FADIGADOS} |
+    | Mortos | {QTD_MORTOS} |
+    | Em teste | {QTD_TESTE} |
+    | Score medio dos winners | {SCORE_MEDIO}/5 |
+
+    ---
+    *Analise gerada pelo squad ads-management — ads-creative-analyst*
+
+  guidelines:
+    - "NUNCA classificar criativo com < 1000 impressoes como winner ou morto"
+    - "SEMPRE incluir deconstrucao completa de cada winner"
+    - "SEMPRE incluir compliance check com ficha do cliente"
+    - "Scoring DEVE ter justificativa por dimensao, nao so numero"
+    - "Acoes DEVEM ser priorizadas: URGENTE > IMPORTANTE > PROXIMO"
+    - "Padroes replicaveis DEVEM ser documentados para uso em briefs futuros"

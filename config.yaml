@@ -1,0 +1,165 @@
+squad:
+  name: ads-management
+  display_name: "Gestao de Trafego Pago"
+  version: "1.4.0"
+  domain: "media-buying"
+  language: "pt-BR"
+  created: "2026-02-20"
+
+  description: |
+    Squad especializado em gestao de trafego pago (Meta Ads + Google Ads)
+    para agencias de performance com foco em e-commerce e negocios locais.
+    Baseado em elite minds com frameworks documentados.
+
+  keywords:
+    - trafego pago
+    - media buying
+    - facebook ads
+    - instagram ads
+    - google ads
+    - performance max
+    - gestao de anuncios
+    - otimizacao de campanhas
+
+  target_user:
+    profile: "Gestor de trafego senior operando sozinho"
+    accounts: "5-20 contas simultaneas"
+    platforms: ["Meta Ads", "Google Ads"]
+    clients: ["e-commerce", "negocios locais"]
+    interaction_mode: "Cola dados, recebe acoes"
+
+agents:
+  orchestrator:
+    - id: ads-chief
+      file: agents/ads-chief.md
+      tier: orchestrator
+
+  tier_0:
+    - id: ads-strategist
+      file: agents/ads-strategist.md
+      based_on: ["Molly Pittman", "Ralph Burns"]
+    - id: ads-diagnostician
+      file: agents/ads-diagnostician.md
+      based_on: ["Mike Rhodes", "Frederick Vallaeys"]
+
+  tier_1:
+    - id: meta-ads-expert
+      file: agents/meta-ads-expert.md
+      based_on: ["Depesh Mandalia", "Pedro Sobral"]
+    - id: google-ads-expert
+      file: agents/google-ads-expert.md
+      based_on: ["Kasim Aslam", "John Moran", "Ed Leake"]
+    - id: ads-creative-analyst
+      file: agents/ads-creative-analyst.md
+      based_on: ["Dara Denney", "Barry Hott", "Nick Shackelford"]
+
+  tier_2:
+    - id: ads-optimizer
+      file: agents/ads-optimizer.md
+      based_on: ["Ed Leake", "Andrew Foxwell"]
+
+workflows:
+  - name: wf-client-onboarding
+    file: workflows/wf-client-onboarding.yaml
+    trigger: "Novo cliente"
+    phases: ["Briefing", "Estrategia", "Setup", "Lancamento", "Otimizacao inicial"]
+
+  - name: wf-daily-optimization
+    file: workflows/wf-daily-optimization.yaml
+    trigger: "Rotina diaria"
+    phases: ["Check dados", "Diagnostico", "Decisao", "Acao", "Log"]
+
+  - name: wf-performance-diagnosis
+    file: workflows/wf-performance-diagnosis.yaml
+    trigger: "Queda de performance"
+    phases: ["Alerta", "Investigacao", "Causa-raiz", "Plano de acao"]
+
+  - name: wf-creative-refresh
+    file: workflows/wf-creative-refresh.yaml
+    trigger: "Fadiga criativa detectada"
+    phases: ["Deteccao", "Analise de Winners", "Brief Criativo", "Producao e Teste", "Validacao"]
+
+tasks:
+  - diagnose-campaign.md
+  - create-campaign-plan.md
+  - daily-health-check.md
+  - generate-client-report.md
+  - intake-client-context.md
+  - analyze-ad-creatives.md
+  - create-creative-brief.md
+  - competitor-creative-analysis.md
+
+templates:
+  - relatorio-mensal.yaml
+  - relatorio-semanal.yaml
+  - plano-estrategico.yaml
+  - log-diario.yaml
+  - analise-criativos.yaml
+  - brief-criativo.yaml
+
+checklists:
+  - checklist-diario.md
+  - checklist-semanal.md
+  - checklist-mensal.md
+  - checklist-lancamento.md
+  - checklist-tracking.md
+  - checklist-creative-review.md
+
+data:
+  - benchmarks.yaml
+  - heuristics-index.yaml
+  - clients/_template-client.yaml
+  - clients/uvits-vitaminas.yaml
+
+client_context:
+  description: "Sistema de contexto por cliente — ficha YAML por conta gerenciada"
+  location: "data/clients/"
+  template: "data/clients/_template-client.yaml"
+  rule: "TODOS os agents DEVEM consultar a ficha do cliente ANTES de recomendar"
+  veto: "SE recomendacao viola restricoes da ficha → BLOQUEAR"
+
+elite_minds:
+  - name: Depesh Mandalia
+    framework: "BPM Method + Graduation Framework + CBO Cookbook"
+    score: "9/9"
+    agent: meta-ads-expert
+  - name: Pedro Sobral
+    framework: "Metodo Sobral / 3-Campaign Mastery"
+    score: "8/9"
+    agent: meta-ads-expert
+  - name: Kasim Aslam / John Moran
+    framework: "You vs Google + 6 Critical Campaigns"
+    score: "9/9"
+    agent: google-ads-expert
+  - name: Ed Leake
+    framework: "God Tier Ads 400+ Step Framework"
+    score: "9/9"
+    agent: google-ads-expert + ads-optimizer
+  - name: Mike Rhodes
+    framework: "AdAID Framework (Ask-Information-Do)"
+    score: "8/9"
+    agent: ads-diagnostician
+  - name: Molly Pittman
+    framework: "Profitable Traffic System / CVJ"
+    score: "9/9"
+    agent: ads-strategist
+  - name: Ralph Burns
+    framework: "CaAMP + Kaizen Kreative"
+    score: "7/9"
+    agent: ads-strategist
+  - name: Andrew Foxwell
+    framework: "AAA Method + SOPs + Dashboards"
+    score: "8/9"
+    agent: ads-optimizer
+  - name: Dara Denney
+    framework: "Performance Creative Framework — Hook-Hold-CTA + Creative Scoring"
+    score: "9/9"
+    agent: ads-creative-analyst
+  - name: Barry Hott
+    framework: "Ad Creative Iteration System — Pattern Recognition + Winner Deconstruction"
+    score: "8/9"
+    agent: ads-creative-analyst
+  - name: Nick Shackelford
+    framework: "Structured Creative Testing — Creative Testing Matrix + Velocity Pipeline"
+    score: "8/9"
+    agent: ads-creative-analyst

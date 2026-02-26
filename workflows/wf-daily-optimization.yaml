@@ -1,0 +1,97 @@
+workflow:
+  name: wf-daily-optimization
+  display_name: "Rotina Diaria de Otimizacao"
+  squad: ads-management
+  trigger: "Todo dia de manha"
+  estimated_time: "15-30 min para 9 contas"
+
+  description: |
+    Workflow para rotina diaria de otimizacao. Gestor cola dados,
+    recebe prioridades e acoes. Objetivo: 9 contas em < 30 min.
+
+  client_context:
+    rule: "Carregar ficha do cliente para CADA conta mencionada nos dados"
+    action: "Para cada conta nos dados, buscar data/clients/{slug}.yaml"
+    enrichment: |
+      Ao classificar e recomendar acoes por conta:
+      - Consultar client.produtos_ativos antes de sugerir novos criativos
+      - Consultar client.restricoes_produto antes de recomendar ofertas
+      - Consultar client.metas para comparar CPA/ROAS vs meta do cliente
+      - Consultar client.aprendizados para nao repetir erros conhecidos
+    veto: "SE recomendacao viola client.restricoes_produto → BLOQUEAR acao"
+
+  phases:
+    - phase: 1
+      name: "Coleta de Dados"
+      agent: ads-optimizer
+      description: "Gestor fornece dados de todas as contas"
+      elicit: true
+      input_format: |
+        Cole dados por conta:
+        Conta | Plataforma | CPA/ROAS atual | Meta | Conversoes ontem | Frequencia (Meta)
+      checkpoint:
+        veto: "SE sem dados → NAO prosseguir"
+      handoff:
+        to: "self (ads-optimizer)"
+        trigger: "automatico — dados recebidos e parseados"
+        data_passed: "tabela de dados por conta"
+
+    - phase: 2
+      name: "Classificacao"
+      agent: ads-optimizer
+      task: daily-health-check.md
+      description: "Classificar cada conta: ESCALAR / MANTER / OTIMIZAR / PAUSAR / FADIGA"
+      checkpoint:
+        veto: "SE alguma conta sem dados suficientes para classificar → marcar como REVISAR, nao chutar"
+        quality: "Cada conta DEVE ter classificacao + justificativa (metrica que motivou)"
+      handoff:
+        to: "self (ads-optimizer)"
+        trigger: "automatico — todas contas classificadas"
+        data_passed: "tabela conta + classificacao + justificativa"
+
+    - phase: 3
+      name: "Priorizacao"
+      agent: ads-optimizer
+      description: "Ordenar contas por urgencia de acao"
+      order: "PAUSAR > FADIGA > OTIMIZAR > ESCALAR > MANTER"
+      checkpoint:
+        veto: "SE mais de 3 contas PAUSAR no mesmo dia → alertar gestor, pode ser problema sistêmico"
+        quality: "Lista priorizada DEVE ter acao especifica por conta (nao apenas classificacao)"
+      handoff:
+        to: "self (ads-optimizer) OU ads-diagnostician (se problema complexo)"
+        trigger: "automatico — lista priorizada com acoes definidas"
+        data_passed: "lista ordenada por urgencia com acao por conta"
+
+    - phase: 4
+      name: "Acao"
+      agents:
+        - ads-optimizer
+        - ads-diagnostician  # se necessario
+      description: "Executar acoes por conta, comecando pelas urgentes"
+      rules:
+        - "Contas PAUSAR/FADIGA: agir imediatamente"
+        - "Contas ESCALAR: aumentar budget 20-30%"
+        - "Contas MANTER: confirmar que nada mudou"
+        - "SE problema complexo → encaminhar para ads-diagnostician"
+      checkpoint:
+        veto: "SE acao envolve mudanca de budget > 50% → requer confirmacao do gestor"
+      handoff:
+        to_diagnostician:
+          trigger: "SE problema complexo detectado (heuristica ESC_001)"
+          data_passed: "conta, sintoma, metricas, classificacao"
+        to_documentation:
+          trigger: "automatico — todas acoes executadas"
+          data_passed: "lista de acoes executadas por conta"
+
+    - phase: 5
+      name: "Documentacao"
+      agent: ads-optimizer
+      description: "Registrar o que foi feito em cada conta"
+      output: "Log de acoes do dia por conta (template: log-diario.yaml)"
+      checkpoint:
+        veto: "SE nao documentou → NAO fechar o dia"
+
+  completion_criteria:
+    - "Todas as contas classificadas"
+    - "Acoes urgentes executadas"
+    - "Log do dia documentado"

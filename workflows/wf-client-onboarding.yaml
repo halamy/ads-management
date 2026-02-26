@@ -1,0 +1,146 @@
+workflow:
+  name: wf-client-onboarding
+  display_name: "Onboarding de Novo Cliente"
+  squad: ads-management
+  trigger: "Novo cliente entra na agencia"
+  estimated_time: "1-2 horas"
+
+  description: |
+    Workflow completo para onboarding de novo cliente de trafego pago.
+    Da entrada do briefing ate a otimizacao inicial pos-lancamento.
+
+  client_context:
+    rule: "OBRIGATORIO — carregar ficha do cliente ANTES de iniciar qualquer fase"
+    action: "Ler data/clients/{slug}.yaml. SE nao existe → fase 1 DEVE gerar a ficha."
+    veto: "SE ficha nao existir ao final da fase 1 → NAO prosseguir para fase 2"
+
+  phases:
+    - phase: 1
+      name: "Briefing + Ficha do Cliente"
+      agent: ads-chief
+      description: "Coletar informacoes do cliente e gerar/atualizar ficha em data/clients/"
+      inputs:
+        - "Nome do cliente e segmento"
+        - "Budget mensal disponivel"
+        - "Objetivo principal (leads, vendas, awareness)"
+        - "Publico-alvo"
+        - "Assets disponiveis (site, LP, criativos, catalogo)"
+        - "Historico (ja rodou anuncios antes?)"
+        - "Expectativas e metas"
+        - "Produtos/servicos ativos (OBRIGATORIO — lista completa)"
+        - "Restricoes de produto (o que NAO vende, NAO pode prometer)"
+        - "Restricoes legais (ANVISA, CRM, etc.)"
+      output: |
+        1. Briefing estruturado completo
+        2. Ficha do cliente salva em data/clients/{slug}.yaml
+      client_file_generation:
+        action: "Gerar {slug}.yaml a partir de _template-client.yaml com dados coletados"
+        required_fields:
+          - "client.slug"
+          - "client.nome"
+          - "client.segmento"
+          - "client.produtos_ativos (pelo menos 1)"
+          - "client.restricoes_produto"
+          - "client.plataformas"
+          - "client.budget.mensal_total"
+          - "client.metas.objetivo_principal"
+          - "client.metas.cpa_meta OU client.metas.roas_meta"
+        veto: "SE campos obrigatorios nao preenchidos → NAO gerar ficha, pedir dados faltantes"
+      checkpoint:
+        veto: "SE briefing incompleto (sem budget ou objetivo) → NAO prosseguir"
+        action: "Pedir informacoes faltantes ao gestor"
+      handoff:
+        to: ads-strategist
+        trigger: "automatico — briefing completo, ficha gerada e validada"
+        data_passed: "briefing estruturado + path da ficha do cliente (data/clients/{slug}.yaml)"
+
+    - phase: 2
+      name: "Estrategia"
+      agent: ads-strategist
+      task: create-campaign-plan.md
+      description: "Definir funil, split de budget, metas"
+      inputs:
+        - "Briefing da fase 1"
+      output: "Plano estrategico com funil, budget split, metas (template: plano-estrategico.yaml)"
+      checkpoint:
+        veto: "SE budget < 5x CPA meta x 30 → ALERTAR que dados serao insuficientes"
+        action: "Alinhar expectativas com gestor antes de prosseguir"
+      handoff:
+        to: "meta-ads-expert + google-ads-expert (paralelo)"
+        trigger: "automatico — plano estrategico aprovado"
+        data_passed: "plano estrategico completo (funil, budget split, metas, estrutura de campanhas)"
+
+    - phase: 3
+      name: "Setup"
+      agents:
+        - meta-ads-expert
+        - google-ads-expert
+      description: "Configurar campanhas em cada plataforma"
+      inputs:
+        - "Plano estrategico da fase 2"
+      parallel: true
+      sub_tasks:
+        meta:
+          - "Configurar pixel e CAPI"
+          - "Criar campanhas conforme plano"
+          - "Configurar publicos"
+          - "Subir criativos"
+          - "Configurar naming conventions"
+        google:
+          - "Configurar Enhanced Conversions"
+          - "Criar campanhas conforme plano"
+          - "Definir keywords e negativas"
+          - "Configurar extensoes"
+          - "Ativar campanhas"
+      merge_gate:
+        description: "Consolidar outputs de ambos os especialistas antes de prosseguir"
+        agent: ads-chief
+        conditions:
+          - "Ambos especialistas completaram setup"
+          - "Tracking confirmado em TODAS as plataformas"
+          - "Naming conventions consistentes entre plataformas"
+          - "Budget split conforme plano estrategico da fase 2"
+        veto: "SE qualquer plataforma com setup incompleto → AGUARDAR conclusao antes de lancar"
+      output: "Campanhas configuradas e prontas para lancamento (ambas plataformas validadas)"
+      checkpoint:
+        veto: "SE tracking nao confirmado → NAO lancar campanhas"
+        action: "Testar tracking antes de gastar budget"
+
+    - phase: 4
+      name: "Lancamento"
+      agent: ads-chief
+      description: "Ativar campanhas e confirmar que tudo esta rodando"
+      inputs:
+        - "Campanhas configuradas da fase 3"
+      output: "Campanhas ativas, tracking confirmado"
+      checkpoint:
+        veto: "SE alguma campanha com erro (rejeitada, sem entrega) → CORRIGIR antes de prosseguir"
+        action: "Verificar status de cada campanha nas primeiras 2h"
+      handoff:
+        to: ads-optimizer
+        trigger: "automatico — campanhas ativas e tracking confirmado por 2h+"
+        data_passed: "campanhas ativas, plataformas, budget por campanha, metas definidas"
+
+    - phase: 5
+      name: "Otimizacao Inicial"
+      agent: ads-optimizer
+      description: "Primeiros 7 dias — monitorar e nao mexer (exceto emergencias)"
+      inputs:
+        - "Campanhas ativas da fase 4"
+      duration: "7 dias"
+      rules:
+        - "NAO alterar campanhas nos primeiros 7 dias (fase de aprendizado)"
+        - "Monitorar diariamente mas so agir se: tracking quebrou OU campanha rejeitada"
+        - "Documentar metricas diarias para baseline"
+      output: "Baseline de metricas apos 7 dias (template: relatorio-semanal.yaml)"
+      checkpoint:
+        veto: "SE gestor quer otimizar antes de 7 dias → BLOQUEAR, explicar fase de aprendizado"
+        exception: "Emergencia (tracking quebrado, campanha rejeitada, budget zerou)"
+
+  completion_criteria:
+    - "Briefing completo documentado"
+    - "Plano estrategico validado"
+    - "Campanhas ativas em todas as plataformas definidas"
+    - "Tracking confirmado funcionando"
+    - "Baseline de 7 dias coletado"
+    - "Cliente informado sobre expectativas do primeiro mes"

@@ -1,0 +1,196 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# FICHA DE CLIENTE: Uvits Vitaminas
+# ═══════════════════════════════════════════════════════════════════════════════
+
+client:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # IDENTIFICACAO
+  # ─────────────────────────────────────────────────────────────────────────────
+  slug: "uvits-vitaminas"
+  nome: "Uvits Vitaminas"
+  segmento: "e-commerce"
+  site: ""  # preencher com URL real
+  cidade_estado: ""
+  responsavel: ""
+  desde: "2025-12"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PRODUTOS E SERVICOS
+  # ─────────────────────────────────────────────────────────────────────────────
+  produtos_ativos:
+    - nome: "Vitamina D3"
+      categoria: "vitaminas"
+      ticket_medio: "R$89"
+      margem: ""  # preencher
+      recorrencia: "mensal"
+      destaque: true
+      url: ""
+
+    - nome: "Complexo B"
+      categoria: "vitaminas"
+      ticket_medio: "R$79"
+      margem: ""
+      recorrencia: "mensal"
+      destaque: false
+      url: ""
+
+    - nome: "Vitaminas Kids (gotas)"
+      categoria: "vitaminas-infantil"
+      ticket_medio: "R$69"
+      margem: ""
+      recorrencia: "mensal"
+      destaque: true
+      url: ""
+
+    - nome: "Vitaminas Adulto"
+      categoria: "vitaminas"
+      ticket_medio: "R$89"
+      margem: ""
+      recorrencia: "mensal"
+      destaque: false
+      url: ""
+
+  produtos_descontinuados: []
+  # Preencher se houver produtos que sairam de linha
+
+  restricoes_produto:
+    - "NAO temos produto em formato GOMA — apenas capsulas e gotas"
+    - "NAO vendemos kits/bundles no site atualmente (considerar criar)"
+    - "NAO temos frete gratis fixo — verificar politica atual com cliente"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PUBLICO-ALVO
+  # ─────────────────────────────────────────────────────────────────────────────
+  publico:
+    principal:
+      descricao: "Maes 25-58 anos que compram vitaminas para si e para os filhos"
+      idade: "25-58"
+      genero: "F (predominante)"
+      localizacao: "Brasil (foco Sudeste)"
+      interesses:
+        - "saude e bem-estar"
+        - "vitaminas e suplementos"
+        - "maternidade"
+        - "alimentacao saudavel"
+        - "fitness"
+    secundario:
+      descricao: "Adultos H/M preocupados com saude e imunidade"
+      idade: "22-62"
+      genero: "ambos"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PLATAFORMAS E CONTAS
+  # ─────────────────────────────────────────────────────────────────────────────
+  plataformas:
+    - nome: "Meta Ads"
+      conta_id: ""  # preencher
+      pixel_id: ""  # preencher
+      status: "ativa"
+
+  # Google Ads nao ativo no momento — considerar ativar para Search
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # BUDGET E METAS
+  # ─────────────────────────────────────────────────────────────────────────────
+  budget:
+    mensal_total: "R$2.200"  # ~R$72/dia
+    split_plataformas:
+      meta_ads: "100%"
+      google_ads: "0%"
+    pode_aumentar: true  # verificar com cliente
+    limite_maximo: ""  # definir
+
+  metas:
+    objetivo_principal: "vendas"
+    cpa_meta: "R$35"
+    roas_meta: "3.5x"
+    conversoes_meta_mes: "60"  # budget / CPA meta
+    meta_secundaria: "aumentar base de compradores recorrentes"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # HISTORICO E CONTEXTO
+  # ─────────────────────────────────────────────────────────────────────────────
+  historico:
+    ja_anunciou_antes: true
+    tempo_anunciando: "3+ meses"
+    resultados_anteriores: |
+      Periodo Dez/2025 a Fev/2026 (82 dias):
+      - Spend: R$5.936 | Receita: R$20.337 | 152 compras
+      - ROAS geral: 3,43x | CPA medio: R$39,05
+      - Melhor campanha: [CONVERSAO] [VENDAS] 2.0 (ROAS 4,05x)
+      - 3 de 7 campanhas ativas, 4 pausadas
+    problemas_conhecidos:
+      - "RMKT performa PIOR que prospecting (ROAS 2,79x vs 4,05x) — invertido"
+      - "Frequencia acima de 3.0 em 2 ad sets — fadiga de criativo recorrente"
+      - "Campanha TESE com melhor CPA (R$26,55) estava pausada sem motivo claro"
+      - "Budget apertado (R$72/dia para 7 campanhas)"
+      - "Topo de funil praticamente inexistente (R$0,50/dia em awareness)"
+
+  aprendizados:
+    funciona:
+      - "Criativos TEMATICOS/SAZONAIS performam muito acima (Carnaval ROAS 10,29x)"
+      - "Publico Lookalike de compradores (Semelhantes) tem melhor CPA (R$26,55)"
+      - "Publico Mulheres performa melhor que misto"
+      - "Ad set PB Kids tem ROAS 4,12x com frequencia saudavel (2,54)"
+    nao_funciona:
+      - "Catalogo dinamico no RMKT fadiga rapido (frequencia 3,2+)"
+      - "Publico de interesse muito nichado (saude/vitaminas < 100k) satura rapido"
+      - "Campanha de trafego puro (KIDS + ADULTOS) nao gerou conversao"
+      - "RMKT com janela unica 180D mistura quente com frio"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # ASSETS DISPONIVEIS
+  # ─────────────────────────────────────────────────────────────────────────────
+  assets:
+    site_proprio: true
+    landing_pages: []  # preencher URLs
+    catalogo_produtos: true  # integrado com Meta
+    criativos_banco: ""  # onde ficam os criativos
+    ugc_disponivel: false  # considerar produzir
+    depoimentos: false  # considerar coletar
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # REGRAS DO CLIENTE
+  # ─────────────────────────────────────────────────────────────────────────────
+  regras:
+    comunicacao:
+      tom: "informal, acessivel, maternal"
+      palavras_proibidas:
+        - "cura"
+        - "tratamento"
+        - "remedio"
+      palavras_obrigatorias: []
+    aprovacao:
+      criativos_precisam_aprovacao: false  # verificar
+      tempo_aprovacao: ""
+    restricoes_legais:
+      - "NAO pode prometer cura ou tratamento (ANVISA)"
+      - "NAO pode usar imagem de medico sem autorizacao (CFM)"
+      - "DEVE incluir 'Consulte seu medico' em claims de saude"
+      - "Suplementos alimentares — regulacao ANVISA RDC 243/2018"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # CONCORRENTES
+  # ─────────────────────────────────────────────────────────────────────────────
+  concorrentes: []
+  # Preencher quando identificar concorrentes diretos
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # NOTAS DO GESTOR
+  # ─────────────────────────────────────────────────────────────────────────────
+  notas: |
+    - Vitaminas tem potencial de compra recorrente (mensal/trimestral)
+    - Calcular LTV real para definir nCAC adequado
+    - Considerar ativar Google Search para termos de intencao
+      ("comprar vitamina D3", "vitamina infantil gotas")
+    - Cliente pode ter margem para bundle/kit — validar
+    - Criativos sazonais sao o ponto forte — manter calendario tematico
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # METADATA
+  # ─────────────────────────────────────────────────────────────────────────────
+  metadata:
+    criado_em: "2026-02-24"
+    atualizado_em: "2026-02-24"
+    versao: "1.0"
+    preenchido_por: "squad-chief (dados extraidos do relatorio de performance Dez/2025-Fev/2026)"

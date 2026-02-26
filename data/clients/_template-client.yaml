@@ -1,0 +1,172 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# FICHA DE CLIENTE — ads-management squad
+# ═══════════════════════════════════════════════════════════════════════════════
+# INSTRUCOES:
+#   1. Copie este arquivo e renomeie: {slug-do-cliente}.yaml
+#   2. Preencha TODOS os campos obrigatorios (marcados com # OBRIGATORIO)
+#   3. Campos opcionais podem ser removidos se nao aplicaveis
+#   4. Este arquivo e consultado por TODOS os agents antes de recomendar
+#   5. Atualizar sempre que houver mudanca de produto, meta ou restricao
+#
+# VETO CONDITION:
+#   SE agent recomenda produto/servico que NAO esta em produtos_ativos → BLOQUEAR
+#   SE agent sugere plataforma que NAO esta em plataformas → ALERTAR
+#   SE agent sugere budget acima de budget.mensal_total → ALERTAR
+# ═══════════════════════════════════════════════════════════════════════════════
+
+client:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # IDENTIFICACAO (OBRIGATORIO)
+  # ─────────────────────────────────────────────────────────────────────────────
+  slug: ""                    # OBRIGATORIO — identificador unico (ex: uvits-vitaminas)
+  nome: ""                    # OBRIGATORIO — nome da empresa/marca
+  segmento: ""                # OBRIGATORIO — e-commerce, servico local, SaaS, infoproduto, etc.
+  site: ""                    # URL principal
+  cidade_estado: ""           # Se negocio local
+  responsavel: ""             # Nome do contato principal
+  desde: ""                   # Data de inicio da gestao (YYYY-MM)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PRODUTOS E SERVICOS (OBRIGATORIO)
+  # ─────────────────────────────────────────────────────────────────────────────
+  produtos_ativos:            # OBRIGATORIO — lista de produtos/servicos que o cliente VENDE HOJE
+    - nome: ""
+      categoria: ""           # Agrupar por categoria (ex: vitaminas, suplementos)
+      ticket_medio: ""        # Valor medio de venda (R$)
+      margem: ""              # Margem de contribuicao (%) — usado pra calcular ROAS minimo
+      recorrencia: ""         # unica, mensal, trimestral, anual
+      destaque: false         # Produto carro-chefe?
+      url: ""                 # URL da pagina do produto (LP ou pagina de produto)
+
+  produtos_descontinuados:    # Produtos que NAO existem mais — agents NAO podem recomendar
+    - nome: ""
+      motivo: ""              # Por que saiu (estoque, margem, sazonalidade)
+      data_descontinuacao: "" # Quando parou
+
+  restricoes_produto:         # Coisas que o agent NAO pode sugerir/prometer
+    - ""
+    # Exemplos:
+    # - "NAO temos produto em formato goma — apenas capsulas e gotas"
+    # - "NAO vendemos para fora do Brasil"
+    # - "NAO temos frete gratis acima de R$X"
+    # - "NAO fazer promocao abaixo de R$Y (margem nao permite)"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PUBLICO-ALVO (OBRIGATORIO)
+  # ─────────────────────────────────────────────────────────────────────────────
+  publico:
+    principal:
+      descricao: ""           # OBRIGATORIO — quem compra (ex: "maes 25-45 anos, classe B/C")
+      idade: ""               # Faixa etaria predominante
+      genero: ""              # M, F, ambos
+      localizacao: ""         # Brasil, estado especifico, cidade especifica
+      interesses: []          # Interesses conhecidos do publico
+    secundario:
+      descricao: ""
+      idade: ""
+      genero: ""
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PLATAFORMAS E CONTAS (OBRIGATORIO)
+  # ─────────────────────────────────────────────────────────────────────────────
+  plataformas:                # OBRIGATORIO — plataformas ativas
+    - nome: ""                # "Meta Ads", "Google Ads"
+      conta_id: ""            # ID da conta de anuncios
+      pixel_id: ""            # ID do pixel/tag (se aplicavel)
+      status: ""              # ativa, pausada, em_setup
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # BUDGET E METAS (OBRIGATORIO)
+  # ─────────────────────────────────────────────────────────────────────────────
+  budget:
+    mensal_total: ""          # OBRIGATORIO — R$ total disponivel por mes
+    split_plataformas:        # Como dividir entre plataformas
+      meta_ads: ""            # % ou R$
+      google_ads: ""          # % ou R$
+    pode_aumentar: false      # Cliente aceita sugestao de aumento?
+    limite_maximo: ""         # Budget maximo que o cliente toparia
+
+  metas:                      # OBRIGATORIO
+    objetivo_principal: ""    # "vendas", "leads", "awareness", "agendamentos"
+    cpa_meta: ""              # CPA maximo aceitavel (R$)
+    roas_meta: ""             # ROAS minimo aceitavel (x)
+    conversoes_meta_mes: ""   # Quantas conversoes/mes espera
+    meta_secundaria: ""       # Objetivo secundario (se houver)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # HISTORICO E CONTEXTO
+  # ─────────────────────────────────────────────────────────────────────────────
+  historico:
+    ja_anunciou_antes: false  # Tem historico de ads?
+    tempo_anunciando: ""      # Quanto tempo (ex: "2 anos", "6 meses")
+    resultados_anteriores: "" # Resumo dos resultados historicos
+    problemas_conhecidos: []  # Problemas recorrentes
+    # Exemplos:
+    # - "RMKT sempre performa pior que prospecting"
+    # - "Criativos fadigam rapido (publico pequeno)"
+    # - "Tracking tem discrepancia de 30% com analytics"
+
+  aprendizados:               # O que ja se sabe que funciona/nao funciona
+    funciona:
+      - ""
+      # Exemplos:
+      # - "Criativos tematicos/sazonais performam muito acima da media"
+      # - "Publico lookalike de compradores e o melhor"
+    nao_funciona:
+      - ""
+      # Exemplos:
+      # - "Catalogo dinamico no RMKT fadiga rapido"
+      # - "Campanha de trafego nao gera conversao"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # ASSETS DISPONIVEIS
+  # ─────────────────────────────────────────────────────────────────────────────
+  assets:
+    site_proprio: false
+    landing_pages: []         # URLs das LPs ativas
+    catalogo_produtos: false  # Tem catalogo integrado (Meta/Google)?
+    criativos_banco: ""       # Onde ficam os criativos (drive, canva, etc.)
+    ugc_disponivel: false     # Tem conteudo UGC?
+    depoimentos: false        # Tem depoimentos de clientes?
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # REGRAS DO CLIENTE (IMPORTANTE)
+  # ─────────────────────────────────────────────────────────────────────────────
+  regras:
+    comunicacao:
+      tom: ""                 # Formal, informal, tecnico, divertido
+      palavras_proibidas: []  # Palavras que NAO pode usar nos anuncios
+      palavras_obrigatorias: [] # Palavras que DEVE usar
+    aprovacao:
+      criativos_precisam_aprovacao: false  # Cliente aprova criativos antes?
+      tempo_aprovacao: ""     # Quanto tempo demora a aprovacao
+    restricoes_legais: []     # Restricoes regulatorias (ANVISA, CRM, etc.)
+    # Exemplos:
+    # - "NAO pode prometer cura ou tratamento (ANVISA)"
+    # - "NAO pode usar imagem de medico sem autorizacao"
+    # - "DEVE incluir 'Este produto nao substitui orientacao medica'"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # CONCORRENTES (OPCIONAL)
+  # ─────────────────────────────────────────────────────────────────────────────
+  concorrentes:
+    - nome: ""
+      url: ""
+      diferencial: ""         # O que o concorrente faz diferente
+      ponto_fraco: ""         # Onde o cliente e melhor
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # NOTAS DO GESTOR
+  # ─────────────────────────────────────────────────────────────────────────────
+  notas: |
+    Espaco livre para observacoes do gestor que nao se encaixam nos campos acima.
+    Atualizar conforme necessario.
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # METADATA
+  # ─────────────────────────────────────────────────────────────────────────────
+  metadata:
+    criado_em: ""             # YYYY-MM-DD
+    atualizado_em: ""         # YYYY-MM-DD
+    versao: "1.0"
+    preenchido_por: ""        # Quem preencheu (gestor, onboarding, etc.)

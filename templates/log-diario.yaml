@@ -1,0 +1,56 @@
+template:
+  name: log-diario
+  display_name: "Log Diario de Otimizacao"
+  squad: ads-management
+  executor: ads-optimizer
+  used_by:
+    - daily-health-check.md
+    - wf-daily-optimization.yaml (phase 5 output)
+
+  description: |
+    Template para registro diario de acoes de otimizacao.
+    Documenta o que foi feito em cada conta para rastreabilidade.
+
+  placeholders:
+    - "{DATA}"
+    - "{GESTOR}"
+    - "{TOTAL_CONTAS}"
+
+  structure: |
+    # Log Diario — {DATA}
+    Gestor: {GESTOR} | Contas: {TOTAL_CONTAS}
+
+    ---
+
+    ## Resumo
+    | Status | Qtd | Contas |
+    |--------|-----|--------|
+    | ESCALAR | {N} | {CONTAS} |
+    | MANTER | {N} | {CONTAS} |
+    | OTIMIZAR | {N} | {CONTAS} |
+    | PAUSAR | {N} | {CONTAS} |
+    | FADIGA | {N} | {CONTAS} |
+
+    ## Acoes por Conta
+
+    ### {CONTA_1} — {STATUS}
+    - Acao: {ACAO}
+    - Motivo: {MOTIVO}
+    - Resultado esperado: {RESULTADO}
+
+    ### {CONTA_2} — {STATUS}
+    - Acao: {ACAO}
+    - Motivo: {MOTIVO}
+    - Resultado esperado: {RESULTADO}
+
+    ## Alertas
+    - {ALERTA_1}
+
+    ## Pendencias para Amanha
+    - {PENDENCIA_1}
+
+  guidelines:
+    - "TODA conta deve aparecer no log (mesmo as MANTER)"
+    - "Acoes SEMPRE com motivo (dados, nao feeling)"
+    - "Alertas = coisas que precisam atencao mas nao sao urgentes"
+    - "Pendencias = acoes que nao puderam ser executadas hoje"

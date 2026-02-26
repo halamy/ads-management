@@ -1,0 +1,79 @@
+template:
+  name: plano-estrategico
+  display_name: "Plano Estrategico de Trafego"
+  squad: ads-management
+  executor: ads-strategist
+  used_by:
+    - create-campaign-plan.md
+    - wf-client-onboarding.yaml (phase 2 output)
+
+  description: |
+    Template do plano estrategico gerado no onboarding.
+    Define funil, split de budget, metas e estrutura de campanhas.
+
+  placeholders:
+    - "{CLIENTE}"
+    - "{OBJETIVO}" # leads, vendas, awareness
+    - "{BUDGET_MENSAL}"
+    - "{PLATAFORMAS}" # Meta, Google, Ambas
+
+  structure: |
+    # Plano Estrategico: {CLIENTE}
+    Data: {DATA} | Estrategista: ads-strategist
+
+    ---
+
+    ## Contexto
+    - Segmento: {SEGMENTO}
+    - Objetivo: {OBJETIVO}
+    - Budget: R${BUDGET_MENSAL}/mes
+    - Plataformas: {PLATAFORMAS}
+    - Publico: {PUBLICO_ALVO}
+
+    ## Funil Proposto
+    ```
+    TOPO (awareness/alcance)
+    ├── {CAMPANHA_TOPO} — {BUDGET_TOPO}% budget
+    │
+    MEIO (consideracao/engajamento)
+    ├── {CAMPANHA_MEIO} — {BUDGET_MEIO}% budget
+    │
+    FUNDO (conversao)
+    ├── {CAMPANHA_FUNDO} — {BUDGET_FUNDO}% budget
+    │
+    RETARGETING
+    └── {CAMPANHA_RETARGET} — {BUDGET_RETARGET}% budget
+    ```
+
+    ## Metas
+    | Metrica | Meta | Base |
+    |---------|------|------|
+    | CPA | R${CPA_META} | Benchmark: R${CPA_BENCH} |
+    | ROAS | {ROAS_META}x | Benchmark: {ROAS_BENCH}x |
+    | Conversoes/mes | {CONV_META} | Budget / CPA meta |
+    | CTR | {CTR_META}% | Benchmark: {CTR_BENCH}% |
+
+    ## Estrutura de Campanhas
+    ### Meta Ads
+    | Campanha | Objetivo | Budget | Publico | Formato |
+    |----------|----------|--------|---------|---------|
+
+    ### Google Ads
+    | Campanha | Tipo | Budget | Keywords | Match |
+    |----------|------|--------|----------|-------|
+
+    ## Calendario
+    - Semana 1: Lancamento + aprendizado (nao mexer)
+    - Semana 2: Primeira otimizacao
+    - Semana 3-4: Escala ou ajuste
+    - Mes 2: Teste de novos formatos
+
+    ## Riscos e Mitigacoes
+    | Risco | Probabilidade | Mitigacao |
+    |-------|--------------|-----------|
+
+  guidelines:
+    - "Budget split DEVE somar 100%"
+    - "Metas DEVEM ser baseadas em benchmarks do segmento"
+    - "SE budget < 5x CPA meta x 30 → ALERTAR sobre dados insuficientes"
+    - "SEMPRE incluir retargeting (minimo 10% do budget)"

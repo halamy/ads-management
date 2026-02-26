@@ -1,0 +1,66 @@
+template:
+  name: relatorio-mensal
+  display_name: "Relatorio Mensal de Performance"
+  squad: ads-management
+  executor: ads-optimizer
+  used_by:
+    - generate-client-report.md
+    - wf-client-onboarding.yaml (phase 5 output)
+
+  description: |
+    Template de relatorio mensal para enviar ao cliente.
+    Substitui prints de tela por report profissional e padronizado.
+
+  placeholders:
+    - "{CLIENTE}" # Nome do cliente
+    - "{PERIODO}" # Ex: Janeiro 2026
+    - "{DATA_GERACAO}" # Data do relatorio
+    - "{INVESTIMENTO_TOTAL}" # R$ total investido
+    - "{RESULTADO_TOTAL}" # Total de leads/vendas
+    - "{CPA_MEDIO}" # CPA medio do periodo
+    - "{ROAS_MEDIO}" # ROAS medio (se ecommerce)
+    - "{VS_ANTERIOR}" # Variacao vs mes anterior
+
+  structure: |
+    # Relatorio Mensal: {CLIENTE} — {PERIODO}
+    Gerado em: {DATA_GERACAO}
+
+    ---
+
+    ## Resumo Executivo
+    | Metrica | Resultado | vs Anterior |
+    |---------|-----------|-------------|
+    | Investimento | {INVESTIMENTO_TOTAL} | {VS_INVEST} |
+    | Resultados | {RESULTADO_TOTAL} | {VS_RESULTADO} |
+    | CPA/ROAS | {CPA_MEDIO} / {ROAS_MEDIO} | {VS_CPA} |
+    | CTR medio | {CTR_MEDIO} | {VS_CTR} |
+
+    ## Performance por Campanha
+    | Campanha | Invest. | Resultado | CPA/ROAS | CTR | Status |
+    |----------|---------|-----------|----------|-----|--------|
+    | {CAMPANHA_1} | ... | ... | ... | ... | ESCALAR/MANTER/OTIMIZAR |
+
+    ## Destaques do Mes
+    - Melhor campanha: {MELHOR_CAMPANHA} (por que)
+    - Melhor criativo: {MELHOR_CRIATIVO} (por que)
+    - Conquista: {CONQUISTA}
+
+    ## Pontos de Atencao
+    - {ATENCAO_1}
+    - {ATENCAO_2}
+
+    ## Recomendacoes para Proximo Mes
+    1. {RECOMENDACAO_1} — impacto esperado
+    2. {RECOMENDACAO_2} — impacto esperado
+    3. {RECOMENDACAO_3} — impacto esperado
+
+    ## Proximos Passos
+    - {PROXIMO_PASSO_1}
+    - {PROXIMO_PASSO_2}
+
+  guidelines:
+    - "Linguagem acessivel — cliente nao e tecnico"
+    - "Sempre incluir comparativo vs periodo anterior"
+    - "Destaques SEMPRE com 'por que' (dados, nao achismo)"
+    - "Recomendacoes SEMPRE com impacto esperado"
+    - "NAO usar jargao: CTR, CPM → traduzir"
