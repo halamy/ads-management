@@ -1,7 +1,7 @@
 squad:
   name: ads-management
   display_name: "Gestao de Trafego Pago"
-  version: "1.4.0"
+  version: "1.5.0"
   domain: "media-buying"
   language: "pt-BR"
   created: "2026-02-20"
@@ -110,6 +110,65 @@ data:
   - heuristics-index.yaml
   - clients/_template-client.yaml
   - clients/uvits-vitaminas.yaml
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # MODO DE OPERACAO
+  # ─────────────────────────────────────────────────────────────────────────────
+operation:
+  status: "active"  # active | paused | maintenance
+  mode: "supervised"  # supervised | autonomous
+  version_deployed: "1.4.0"
+
+  supervised_rules:
+    description: |
+      Modo SUPERVISIONADO: Todo agent analisa e recomenda, mas NUNCA executa
+      sem aprovacao explicita do gestor. Comunicacao via mensagem direta.
+    approval_required_for:
+      - "pausar ou reativar campanhas"
+      - "alterar budget ou distribuicao"
+      - "criar novas campanhas ou ad sets"
+      - "alterar publicos ou segmentacoes"
+      - "mudar criativos ativos"
+      - "alterar bids ou estrategia de lance"
+      - "qualquer acao que afete conta do cliente"
+    approval_NOT_required_for:
+      - "analise e diagnostico (somente leitura)"
+      - "gerar relatorios"
+      - "criar briefs criativos (documento, nao execucao)"
+      - "atualizar ficha do cliente com dados publicos"
+      - "health check diario (somente alertas)"
+    flow: |
+      1. Agent analisa dados/situacao
+      2. Agent apresenta RECOMENDACAO com justificativa
+      3. Agent PERGUNTA: "Posso prosseguir?" ou "Quer que eu execute?"
+      4. Gestor responde: SIM (executa) | NAO (cancela) | AJUSTA (modifica)
+      5. Agent executa SOMENTE apos SIM explicito
+    veto: "SE agent executar acao sem aprovacao → VIOLACAO DE PROCESSO"
+
+  alerts:
+    health_check:
+      frequency: "sob demanda"  # diario quando automatizado
+      trigger: "gestor solicita ou agenda"
+      format: |
+        🚨 ALERTA [{severidade}]: {descricao}
+        📊 Dados: {metricas relevantes}
+        💡 Recomendacao: {acao sugerida}
+        ❓ Quer que eu execute? (SIM / NAO / AJUSTA)
+    performance_drop:
+      trigger: "CPA sobe >20% ou ROAS cai >20% vs meta"
+      format: |
+        🔴 QUEDA DE PERFORMANCE: {cliente}
+        📉 {metrica}: {valor_atual} vs meta {valor_meta} ({variacao}%)
+        🔍 Causa provavel: {diagnostico_rapido}
+        💡 Acao sugerida: {recomendacao}
+        ❓ Posso investigar a fundo? (SIM / NAO)
+    creative_fatigue:
+      trigger: "Frequencia >3.0 em qualquer ad set"
+      format: |
+        ⚠️ FADIGA CRIATIVA: {ad_set}
+        📊 Frequencia: {valor} | Ultimos 7D: {tendencia}
+        💡 Sugestao: {acao}
+        ❓ Quer que eu gere um brief de novos criativos? (SIM / NAO)
 
 client_context:
   description: "Sistema de contexto por cliente — ficha YAML por conta gerenciada"
