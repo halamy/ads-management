@@ -1,0 +1,4 @@
+# Dados sensiveis — NUNCA subir para o GitHub
+VPS-ACCESS.md
+data/clients/*.yaml
+!data/clients/_template-client.yaml
